@@ -7,8 +7,8 @@ function fetchGallery(nextQuery, pageNumber) {
     if (response.ok) {
       return response.json();
     }
-
-    return Promise.reject(new Error(`Нет ответа на странице ${pageNumber}`));
+    console.log('Promise.reject');
+    return Promise.reject(new Error(`Nothing to show for: ${nextQuery}`));
   });
 }
 

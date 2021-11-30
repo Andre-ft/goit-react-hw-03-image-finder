@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import galleryAPI from '../../services/gallery-api';
 import s from './ImageGallery.module.css';
+import ImageGalleryItem from '../ImageGalleryItem';
+import Loader from '../Loader';
+import ErrorQuery from '../ErrorQuery';
 
 const Status = {
   IDLE: 'idle',
@@ -30,34 +33,33 @@ export default class ImageGallery extends Component {
           .fetchGallery(nextQuery, pageNumber)
           .then(gallery => {
             this.setState({ gallery: gallery.hits, status: Status.RESOLVED });
-            console.log('inside fetch', gallery.hits);
           })
           .catch(error => this.setState({ error, status: Status.REJECTED }));
-      }, 1500);
+      }, 2000);
     }
   }
 
   render() {
-    const { gallery, status } = this.state;
+    const { gallery, status, error } = this.state;
 
     if (status === 'idle') {
       return <div>Input query.</div>;
     }
 
     if (status === 'pending') {
-      return <div>PENDING</div>;
+      return <Loader />;
+    }
+
+    if (status === 'rejected') {
+      return <ErrorQuery message={error.message} />;
     }
 
     if (status === 'resolved') {
       return (
         <ul className={s.ImageGallery}>
-          {gallery.map(item => {
-            return (
-              <li className="gallery-item" key={item.id}>
-                <img src={item.webformatURL} alt="" />
-              </li>
-            );
-          })}
+          {gallery.map(item => (
+            <ImageGalleryItem item={item} key={item.id} />
+          ))}
         </ul>
       );
     }
