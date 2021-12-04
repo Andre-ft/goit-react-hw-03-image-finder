@@ -1,5 +1,6 @@
 import errorImage from './error.jpg';
 import React from 'react';
+import PropTypes from 'prop-types';
 
 export default function ErrorQuery({ message }) {
   return (
@@ -9,3 +10,7 @@ export default function ErrorQuery({ message }) {
     </div>
   );
 }
+
+ErrorQuery.propTypes = {
+  message: PropTypes.string.isRequired,
+};

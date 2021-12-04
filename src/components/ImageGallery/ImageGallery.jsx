@@ -4,6 +4,8 @@ import s from './ImageGallery.module.css';
 import ImageGalleryItem from '../ImageGalleryItem';
 import Loader from '../Loader';
 import ErrorQuery from '../ErrorQuery';
+import Button from '../Button';
+import PropTypes from 'prop-types';
 
 const Status = {
   IDLE: 'idle',
@@ -18,6 +20,7 @@ export default class ImageGallery extends Component {
     error: null,
     status: Status.IDLE,
     pageNumber: 1,
+    // activeImageURL: null
   };
 
   componentDidUpdate(prevProps, prevState) {
@@ -26,18 +29,38 @@ export default class ImageGallery extends Component {
     const { pageNumber } = this.state;
 
     if (prevQuery !== nextQuery) {
-      this.setState({ status: Status.PENDING });
+      this.setState({ status: Status.PENDING, pageNumber: 1 });
+      // setTimeout(() => {
+      galleryAPI
+        .fetchGallery(nextQuery, 1)
+        .then(gallery => {
+          this.setState({ gallery, status: Status.RESOLVED });
+        })
+        .catch(error => this.setState({ error, status: Status.REJECTED }));
+      // }, 1500);
+    }
 
-      setTimeout(() => {
-        galleryAPI
-          .fetchGallery(nextQuery, pageNumber)
-          .then(gallery => {
-            this.setState({ gallery: gallery.hits, status: Status.RESOLVED });
-          })
-          .catch(error => this.setState({ error, status: Status.REJECTED }));
-      }, 2000);
+    if (prevState.pageNumber !== pageNumber && pageNumber !== 1) {
+      galleryAPI
+        .fetchGallery(nextQuery, pageNumber)
+        .then(newGallery => {
+          this.setState(({ gallery }) => ({
+            gallery: [...gallery, ...newGallery],
+            status: Status.RESOLVED,
+          }));
+        })
+        .catch(error => this.setState({ error, status: Status.REJECTED }));
     }
   }
+
+  getActiveImageURL = imageURL => {
+    // this.setState({ activeImageURL: imageURL });
+    this.props.getImageURL(imageURL);
+  };
+
+  loadMoreImages = () => {
+    this.setState(({ pageNumber }) => ({ pageNumber: pageNumber + 1 }));
+  };
 
   render() {
     const { gallery, status, error } = this.state;
@@ -56,12 +79,25 @@ export default class ImageGallery extends Component {
 
     if (status === 'resolved') {
       return (
-        <ul className={s.ImageGallery}>
-          {gallery.map(item => (
-            <ImageGalleryItem item={item} key={item.id} />
-          ))}
-        </ul>
+        <>
+          <ul className={s.ImageGallery}>
+            {gallery.map(item => (
+              <ImageGalleryItem
+                item={item}
+                key={item.id}
+                onClick={this.getActiveImageURL}
+              />
+            ))}
+          </ul>
+
+          <Button onClick={this.loadMoreImages} aria-label="Load more images" />
+        </>
       );
     }
   }
 }
+
+ImageGallery.propTypes = {
+  query: PropTypes.string.isRequired,
+  getImageURL: PropTypes.func.isRequired,
+};

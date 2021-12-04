@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { toast } from 'react-toastify';
 import s from './Searchbar.module.css';
+import PropTypes from 'prop-types';
 
 class Searchbar extends Component {
   state = {
@@ -9,12 +10,10 @@ class Searchbar extends Component {
 
   handleQueryChange = event => {
     this.setState({ query: event.currentTarget.value.toLowerCase() });
-    // console.log(event.currentTarget.value);
   };
 
   handleSubmit = event => {
     event.preventDefault();
-    // console.log('handleSubmit event', event);
 
     if (this.state.query.trim() === '') {
       toast.error('Input query.');
@@ -49,3 +48,11 @@ class Searchbar extends Component {
 }
 
 export default Searchbar;
+
+Searchbar.defaultProps = {
+  onSubmit: () => null,
+};
+
+Searchbar.propTypes = {
+  onSubmit: PropTypes.func,
+};
