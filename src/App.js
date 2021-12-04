@@ -12,8 +12,6 @@ class App extends Component {
     activeImageURL: null,
   };
 
-  componentDidMount() {}
-
   handleFormSubmit = query => {
     this.setState({ query });
   };
@@ -41,12 +39,7 @@ class App extends Component {
         />
         {activeImageURL && (
           <Modal onClose={this.toggleModal} imageURL={activeImageURL}>
-            <img
-              src={activeImageURL}
-              alt={query}
-              // className={s['Item-image']}
-              // id={id}
-            />
+            <img src={activeImageURL} alt={query} />
           </Modal>
         )}
 
