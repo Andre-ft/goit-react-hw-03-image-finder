@@ -9,7 +9,6 @@ import Modal from './components/Modal';
 class App extends Component {
   state = {
     query: '',
-    gallery: [],
     activeImageURL: null,
   };
 
