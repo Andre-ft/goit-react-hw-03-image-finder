@@ -1,8 +1,9 @@
 const API_KEY = '23458770-c93bd78e83fb2002196f13d31';
+const BASE_URL = 'https://pixabay.com';
 
 function fetchGallery(nextQuery, pageNumber) {
   return fetch(
-    `https://pixabay.com/api/?q=${nextQuery}&page=${pageNumber}&key=${API_KEY}&image_type=photo&orientation=horizontal&per_page=12`,
+    `${BASE_URL}/api/?q=${nextQuery}&page=${pageNumber}&key=${API_KEY}&image_type=photo&orientation=horizontal&per_page=12`,
   )
     .then(response => response.json())
     .then(gallery => {
